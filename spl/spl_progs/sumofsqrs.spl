@@ -1,0 +1,11 @@
+alias number R0;
+number = 0;
+alias sum R1;
+sum = 0;
+while (number <= 20) do
+    alias temp R2;
+    temp = number * number;
+    sum = sum + temp;
+    number = number + 1;
+endwhile;
+print sum;

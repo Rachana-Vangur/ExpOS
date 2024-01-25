@@ -10,6 +10,9 @@
 	char *variable, *p, var[10];
 	struct Typetable *temp;
 	int iterator, lineno = 1;
+
+	struct Typetable* TLookup(char *s);
+	int yyerror(const char *);
 %}
 
 %%
