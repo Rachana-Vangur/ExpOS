@@ -1,5 +1,23 @@
+
+
+//storing SP in UPTR
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
+
+//setting SP to user area page
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 -1;
+
+//backing up the context 
+backup;
+
 //printing a message
-print "TIMER";
+
+print [SYSTEM_STATUS_TABLE + 1];
+
+//restoring the context from kernel stack
+restore;
+
+//setting SP to UPTR
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 13];
 
 //returning to usermode
 ireturn;

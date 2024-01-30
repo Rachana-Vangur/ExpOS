@@ -49,6 +49,14 @@ PTBR = PAGE_TABLE_BASE;
 //10 entries so 
 PTLR = 10;
 
+//setting the User Area Page as 80
+[PROCESS_TABLE + 11] = 80;
+//set the pid as 0
+[PROCESS_TABLE + 1] = 0;
+
+//setting the current i.e first process pid
+[SYSTEM_STATUS_TABLE + 1] = 0;
+
 //entry point for code
 SP = 8 * 512;
 
