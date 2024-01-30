@@ -1,29 +1,35 @@
-//INIT 
-loadi(65,7); 
-loadi(66,8);
+//loading timer interrupt routine
+loadi(4, 17);
+loadi(5, 18);
 
-//exit systemcall
-loadi(22,35);
-loadi(23,36);
-
-//exception handler
+//loading exhandler
 loadi(2, 15);
 loadi(3, 16);
 
+//loading EXIT
+loadi(22, 35);
+loadi(23, 36);
 
-//setting page-table for init
+//library
+loadi(63, 13);
+loadi(64, 14);
 
-//
-[PAGE_TABLE_BASE + 0] = -1;
-[PAGE_TABLE_BASE + 1] = "0000";
-[PAGE_TABLE_BASE + 2] = -1;
-[PAGE_TABLE_BASE + 3] = "0000";
-[PAGE_TABLE_BASE + 4] = -1;
-[PAGE_TABLE_BASE + 5] = "0000";
-[PAGE_TABLE_BASE + 6] = -1;
-[PAGE_TABLE_BASE + 7] = "0000";
+loadi(65, 7);
+loadi(66, 8);
 
-//code
+//library - 2 pages i.e 0,1
+[PAGE_TABLE_BASE + 0] = 63;
+[PAGE_TABLE_BASE + 1] = "0100";
+[PAGE_TABLE_BASE + 2] = 64;
+[PAGE_TABLE_BASE + 3] = "0100";
+
+//Heap - 2 pages i.e 2,3
+[PAGE_TABLE_BASE + 4] = 78;
+[PAGE_TABLE_BASE + 5] = "0110";
+[PAGE_TABLE_BASE + 6] = 79;
+[PAGE_TABLE_BASE + 7] = "0110";
+
+//Code - 4 pages i.e 4,5,6,7
 [PAGE_TABLE_BASE + 8] = 65;
 [PAGE_TABLE_BASE + 9] = "0100";
 [PAGE_TABLE_BASE + 10] = 66;
@@ -33,25 +39,21 @@ loadi(3, 16);
 [PAGE_TABLE_BASE + 14] = -1;
 [PAGE_TABLE_BASE + 15] = "0000";
 
-//stack
+//stack - 2 pages i.e 8,9
 [PAGE_TABLE_BASE + 16] = 76;
 [PAGE_TABLE_BASE + 17] = "0110";
-[PAGE_TABLE_BASE + 18] = -1;
-[PAGE_TABLE_BASE + 19] = "0000";
+[PAGE_TABLE_BASE + 18] = 77;
+[PAGE_TABLE_BASE + 19] = "0110";
 
-
-
-
-
-//setting up PTBR and PTLR for address translation
 PTBR = PAGE_TABLE_BASE;
+//10 entries so 
 PTLR = 10;
 
-//setting point of entry through stack
-[76 * 512] = 4 * 512z;
+//entry point for code
 SP = 8 * 512;
 
-//returning to usermode
+//entry point for stack
+//the starting instruction address is at the second word in code page
+[76*512] = [65*512 + 1];
+breakpoint;
 ireturn;
-
-

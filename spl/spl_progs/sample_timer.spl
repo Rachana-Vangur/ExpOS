@@ -1,0 +1,5 @@
+//printing a message
+print "TIMER";
+
+//returning to usermode
+ireturn;
