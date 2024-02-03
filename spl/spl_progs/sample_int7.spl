@@ -1,0 +1,49 @@
+//setting mode bit to syscall number
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] *16) + 9] = 5;
+
+//storing SP for calculations
+alias UserSP R0;
+UserSP = SP;
+
+
+//setting the UPTR and SP to kernel stack
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11]* 512 -1;
+
+
+//finding real address of Argument 1 i.e UserSP - 4
+alias physicalPageNum R1;
+alias offSet R2;
+physicalPageNum = [PTBR + 2 * ((UserSP -4)/ 512)];
+offSet = (UserSP-4) % 512;
+alias Adder R3;
+Adder = (physicalPageNum * 512) + offSet;
+alias fileDescripter R4;
+fileDescripter = [Adder];
+
+
+//checking the fileDescripter and setting the return values
+ alias physicalRet R5;
+ alias word R6;
+ physicalRet = ([PTBR + 2 *((UserSP - 1)/ 512)] * 512) + ((UserSP - 1) % 512);
+if(fileDescripter != -2) then
+   
+    [physicalRet] = -1; // becoz its invalid
+else 
+    //find the real address of 2nd Argument and print the message/word
+    
+    word = [([PTBR + 2 *((UserSP - 3)/ 512)] * 512) + ((UserSP - 3) % 512)];
+    print word;
+    
+    [physicalRet] = 0;
+endif;
+//Routine complete
+
+//setting mode to 0 i.e usermode
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] *16 + 9] = 0;
+
+// setting the SP to UserSP to change mode
+SP  = UserSP;
+
+//giving control to usermode
+ireturn;

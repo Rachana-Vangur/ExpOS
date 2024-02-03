@@ -17,6 +17,10 @@ loadi(64, 14);
 loadi(65, 7);
 loadi(66, 8);
 
+//loading INT7 for write systemcall
+loadi(16, 29);
+loadi(17, 30);
+
 //library - 2 pages i.e 0,1
 [PAGE_TABLE_BASE + 0] = 63;
 [PAGE_TABLE_BASE + 1] = "0100";
