@@ -7,7 +7,7 @@
 0
 0
 MOV R0, 1
-MOV R2, 7
+MOV R2, 5
 GE R2, R0
 JZ R2, 2110
 MOV R1, R0

@@ -10,8 +10,8 @@ SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 -1;
 backup;
 
 //printing a message
-
-print [SYSTEM_STATUS_TABLE + 1];
+print "TIMER INTERRUPT";
+//print [SYSTEM_STATUS_TABLE + 1];
 
 //restoring the context from kernel stack
 restore;
