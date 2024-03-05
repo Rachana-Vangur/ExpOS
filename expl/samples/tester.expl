@@ -1,9 +1,22 @@
 int main(){
     decl
         int temp;
+        int i;
     enddecl
     begin
-        temp = exposcall("Write", -2, 2003);
+        temp = 0;
+        while (temp < 10000) do
+            temp = temp + 1;
+            i = 0;
+            while (i < 100) do
+                i = i + 1;
+                temp = temp + 1;
+            endwhile;
+            write(temp / 100);
+        endwhile;
+        
+        
+
         return 0;
     end
 }

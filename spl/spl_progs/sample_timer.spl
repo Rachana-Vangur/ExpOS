@@ -1,23 +1,64 @@
+alias current_process_table R0;
+alias new_process_id R1;
+alias next_process_table R2;
+alias current_process_id R3;
 
 
-//storing SP in UPTR
-[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
 
-//setting SP to user area page
-SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 -1;
+// switch sp to kernal stack
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1]* 16) + 13 ] = SP;
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 12];
 
-//backing up the context 
+
+//backup all registers
 backup;
 
-//printing a message
-print "TIMER INTERRUPT";
-//print [SYSTEM_STATUS_TABLE + 1];
+current_process_table =  PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16);
 
-//restoring the context from kernel stack
+//change process-state to running -> ready 
+[current_process_table + 4] = READY;
+
+//save all the context such as ksp, PTBR, PTLR in pcb
+[current_process_table + 14] = PTBR;
+[current_process_table + 15] = PTLR;
+[current_process_table +12] = SP;
+
+new_process_id = [SYSTEM_STATUS_TABLE + 1];
+current_process_id = [SYSTEM_STATUS_TABLE + 1];
+//choose next process
+if (current_process_id == 1) then
+    new_process_id = 0;
+else 
+    new_process_id = 1;
+endif;
+
+
+next_process_table = PROCESS_TABLE + (new_process_id * 16); 
+
+//update system status table
+
+[SYSTEM_STATUS_TABLE + 1] = new_process_id;
+
+//change the context to new process, i.e ksp, PTBR, PTLR 
+SP = [next_process_table + 12];
+PTBR = [next_process_table + 14];
+PTLR = [next_process_table + 15];
+
+//restore its previous context || restore all registors
+if ([next_process_table + 4] == CREATED) then
+    [next_process_table + 4] = RUNNING;
+    SP = [next_process_table + 13];
+    ireturn;
+endif;
+
+//change its state to running
+[next_process_table + 4] = RUNNING;
+
 restore;
 
-//setting SP to UPTR
+//switch SP to user 
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 12] = SP;
 SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 13];
 
-//returning to usermode
 ireturn;
+//return to user mode

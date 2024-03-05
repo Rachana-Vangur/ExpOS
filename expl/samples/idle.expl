@@ -4,7 +4,9 @@ int main(){
     enddecl
     begin
         while(1==1) do
+            write("IDLE");
             a = 1;
+            breakpoint;
         endwhile;
         return 0;
     end

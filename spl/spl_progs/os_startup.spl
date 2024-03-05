@@ -1,71 +1,124 @@
-//loading timer interrupt routine
-loadi(4, 17);
-loadi(5, 18);
-
-//loading exhandler
-loadi(2, 15);
-loadi(3, 16);
-
-//loading EXIT
-loadi(22, 35);
-loadi(23, 36);
-
 //library
 loadi(63, 13);
 loadi(64, 14);
 
+//init
 loadi(65, 7);
 loadi(66, 8);
 
-//loading INT7 for write systemcall
+//exit
+loadi(22, 35);
+loadi(23, 36);
+
+//exhandler
+loadi(2, 15);
+loadi(3, 16);
+
+//timer
+loadi(4, 17);
+loadi(5, 18);
+
+//int 7
 loadi(16, 29);
 loadi(17, 30);
 
-//library - 2 pages i.e 0,1
+//idle
+loadi(69, 11);
+loadi(70, 12);
+
+
+
+
+ 
+//process table 
+//page tables 
+
+//pagetable for idle
+
+//library
 [PAGE_TABLE_BASE + 0] = 63;
 [PAGE_TABLE_BASE + 1] = "0100";
 [PAGE_TABLE_BASE + 2] = 64;
 [PAGE_TABLE_BASE + 3] = "0100";
 
-//Heap - 2 pages i.e 2,3
-[PAGE_TABLE_BASE + 4] = 78;
-[PAGE_TABLE_BASE + 5] = "0110";
-[PAGE_TABLE_BASE + 6] = 79;
-[PAGE_TABLE_BASE + 7] = "0110";
+//heap
+[PAGE_TABLE_BASE + 4] = -1;
+[PAGE_TABLE_BASE + 5] = "0000";
+[PAGE_TABLE_BASE + 6] = -1;
+[PAGE_TABLE_BASE + 7] = "0000";
 
-//Code - 4 pages i.e 4,5,6,7
-[PAGE_TABLE_BASE + 8] = 65;
+//code
+[PAGE_TABLE_BASE + 8] = 69;
 [PAGE_TABLE_BASE + 9] = "0100";
-[PAGE_TABLE_BASE + 10] = 66;
+[PAGE_TABLE_BASE + 10] = 70;
 [PAGE_TABLE_BASE + 11] = "0100";
 [PAGE_TABLE_BASE + 12] = -1;
 [PAGE_TABLE_BASE + 13] = "0000";
 [PAGE_TABLE_BASE + 14] = -1;
 [PAGE_TABLE_BASE + 15] = "0000";
 
-//stack - 2 pages i.e 8,9
+//stack
 [PAGE_TABLE_BASE + 16] = 76;
 [PAGE_TABLE_BASE + 17] = "0110";
-[PAGE_TABLE_BASE + 18] = 77;
-[PAGE_TABLE_BASE + 19] = "0110";
+[PAGE_TABLE_BASE + 18] = -1;
+[PAGE_TABLE_BASE + 19] = "0000";
+
+//pagetable for init
+
+//library
+[PAGE_TABLE_BASE + 20] = 63;
+[PAGE_TABLE_BASE + 21] = "0100";
+[PAGE_TABLE_BASE + 22] = 64;
+[PAGE_TABLE_BASE + 23] = "0100";
+
+//heap
+[PAGE_TABLE_BASE + 24] = 79;
+[PAGE_TABLE_BASE + 25] = "0100";
+[PAGE_TABLE_BASE + 26] = 80;
+[PAGE_TABLE_BASE + 27] = "0100";
+
+//code
+[PAGE_TABLE_BASE + 28] = 65;
+[PAGE_TABLE_BASE + 29] = "0100";
+[PAGE_TABLE_BASE + 30] = 66;
+[PAGE_TABLE_BASE + 31] = "0100";
+[PAGE_TABLE_BASE + 32] = -1;
+[PAGE_TABLE_BASE + 33] = "0000";
+[PAGE_TABLE_BASE + 34] = -1;
+[PAGE_TABLE_BASE + 35] = "0000";
+
+//stack
+[PAGE_TABLE_BASE + 36] = 77;
+[PAGE_TABLE_BASE + 37] = "0110";
+[PAGE_TABLE_BASE + 38] = 78;
+[PAGE_TABLE_BASE + 39] = "0110";
 
 PTBR = PAGE_TABLE_BASE;
-//10 entries so 
 PTLR = 10;
 
-//setting the User Area Page as 80
-[PROCESS_TABLE + 11] = 80;
-//set the pid as 0
+//process table for init
 [PROCESS_TABLE + 1] = 0;
+[PROCESS_TABLE + 4] = CREATED;
+[PROCESS_TABLE + 11] = 81* 512; //MAYBEEE
+[PROCESS_TABLE + 12] = 0;
+[PROCESS_TABLE + 13] = 8 * 512;
+[PROCESS_TABLE + 14] = PTBR;
+[PROCESS_TABLE + 15] = 10; 
+//process table for idle
 
-//setting the current i.e first process pid
-[SYSTEM_STATUS_TABLE + 1] = 0;
+[PROCESS_TABLE + 17] = 1; 
+[PROCESS_TABLE + 20] = RUNNING;
+[PROCESS_TABLE + 27] = 80;
+[PROCESS_TABLE + 28] = 82*512;   
+[PROCESS_TABLE + 29] = 8 * 512;
+[PROCESS_TABLE + 30] = PTBR + 20;
+[PROCESS_TABLE + 31] = PTLR;
 
-//entry point for code
+
+//setting to run the first instruction i.e SP
 SP = 8 * 512;
+[77 * 512] = [65* 512 + 1];
 
-//entry point for stack
-//the starting instruction address is at the second word in code page
-[76*512] = [65*512 + 1];
-breakpoint;
+[76* 512] = [69* 512 + 1];
+//ireturning  
 ireturn;
